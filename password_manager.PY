@@ -86,12 +86,26 @@ def view():
 def add():
     AccName = input("Account Name: ")
     password = input("Password: ")
-
     with open('passwords.txt', 'a') as f:
         f.write(AccName + " | " + encrypt(password) + "\n")
 
 def delete():
-    pass
+    deletedWord = input("Enter the account you want to delete: ")
+    with open("passwords.txt", 'r') as original:
+        with open("temp.txt", 'w') as copy:
+            for line in original:
+                if not line.strip("\n").startswith(deletedWord):
+                    copy.write(line)
+    os.replace("temp.txt", "passwords.txt")
+
+def password_Generator():
+    password_Length = int(input("Enter the size of the password you would like: "))
+    password = ''
+    for x in range(0,password_Length):
+        password_Characters = random.choice(all_keys)
+        password = password + password_Characters
+    
+    print("This is your new password: " + password + "\nEnter this password in the Password Manager.")
 
 # Main
 create_key()
@@ -125,7 +139,7 @@ print("Welcome to Password Manager.")
     
 # Takes user input to determine which mode to enter
 while True:
-    mode = input("Choose your mode (view, add, delete, quit): ")
+    mode = input("Choose your mode (view, add, delete, password generator, quit): ")
 
     if mode == "quit":
         print("Thank you for using the Password Manager.")
@@ -139,6 +153,9 @@ while True:
     
     elif mode == "delete":
         delete()
+
+    elif mode == "password generator":
+        password_Generator()
 
     else:
         print("Mode invalid. Please try again.")
