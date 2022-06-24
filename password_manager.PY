@@ -1,10 +1,6 @@
 from operator import truediv
 import random
 import os.path
-# LINKS TO STUFF TO USE
-# https://www.educative.io/answers/how-to-generate-a-random-string-in-python
-# https://www.youtube.com/watch?v=FMnW4D4r_E4 
-# https://www.youtube.com/watch?v=DLn3jOsNRVE&t=5262s
 
 all_keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(),.?;:\|+-=_/<>'
 
