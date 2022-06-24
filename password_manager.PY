@@ -20,8 +20,6 @@ def create_key():
     else:
         pass
 
-create_key()
-
 # Stores keys into variables to be used in both encryption and dencrytion
 def load_key(x):
     file = open("key.txt", 'r')
@@ -29,12 +27,6 @@ def load_key(x):
     key = content[x]
     file.close()
     return int(key)
-
-master_key = load_key(0)
-secondary_key = load_key(1)
-
-print(master_key)
-print(secondary_key)
 
 # Manual encryption for the master password
 def encrypt(password):
@@ -59,8 +51,53 @@ def dencrypt(password):
         position = all_keys.find(i)
         newposition = (position - secondary_key - master_key) % 86
         dencryption += all_keys[newposition]
-    print("Decrypted pass" + dencryption)
+    # print("Decrypted pass" + dencryption)
     return dencryption
+
+def dencrypt2(password):
+    dencryption = ''
+    for i in password:
+        position = all_keys.find(i)
+        newposition = (position - master_key) % 86
+        dencryption += all_keys[newposition]
+    # print("Decrypted pass" + dencryption)
+    return str(dencryption)
+
+
+# Check if Master Password is correct
+def isMasterCorrect(password):
+    with open("key.txt", 'r') as file:
+        content = file.readlines()
+        if encrypted_master == content[3]:
+            # print("True")
+            return True
+        else:
+            # print("False")
+            return False
+
+# Modules for modes in password manager
+def view():
+    with open('passwords.txt', 'r') as f:
+        for line in f.readlines():
+            data = line.rstrip()
+            account, pwd = data.split(" | ")
+            print("_________________________________________\n" + "Account Name: " + account + "\nPassword: " + dencrypt2(pwd))
+
+def add():
+    AccName = input("Account Name: ")
+    password = input("Password: ")
+
+    with open('passwords.txt', 'a') as f:
+        f.write(AccName + " | " + encrypt(password) + "\n")
+
+def delete():
+    pass
+
+# Main
+create_key()
+
+master_key = load_key(0)
+secondary_key = load_key(1)
 
 # Have the user input the master password
 master = (input("Enter the master password (First time entering creates the master password): "))
@@ -69,7 +106,6 @@ encrypted_master = encrypt2(encrypt(master))
 
 # Check if there is master password
 masterExists = False
-
 with open("key.txt", 'r') as file:
     masterExists = any("Master" in x for x in file)
 
@@ -79,35 +115,14 @@ if masterExists == False:
 else:
     pass
 
-# Check if Master Password is correct
-def isMasterCorrect(password):
-    with open("key.txt", 'r') as file:
-        content = file.readlines()
-        if encrypted_master == content[3]:
-            return True
-        else:
-            return False
-
-print(isMasterCorrect(encrypted_master))
-
-# Modules for modes in password manager
-def view():
-    with open('passwords.txt', 'r') as f:
-        for line in f.readlines():
-            data = line.rstrip()
-            account, pwd = data.split("|")
-            print("_________________________________________\n" + "Account Name: " + account + "\nPassword:" + pwd)
-
-def add():
-    AccName = input("Account Name: ")
-    password = input("Password: ")
-
-    with open('passwords.txt', 'a') as f:
-        f.write(AccName + " | " + password + "\n")
-
-def delete():
-    pass
-
+# Performs password check
+password_Check = isMasterCorrect(encrypted_master)
+while password_Check == False:
+    master = (input("Password incorrect. Please try again.\nEnter the master password: "))
+    encrypted_master = encrypt2(encrypt(master))
+    password_Check = isMasterCorrect(encrypted_master)
+print("Welcome to Password Manager.")
+    
 # Takes user input to determine which mode to enter
 while True:
     mode = input("Choose your mode (view, add, delete, quit): ")
