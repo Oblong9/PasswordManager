@@ -1,3 +1,4 @@
+from operator import truediv
 import random
 import os.path
 # LINKS TO STUFF TO USE
@@ -15,7 +16,7 @@ def create_key():
     if fileExists == False:
         with open("key.txt", 'a') as key_file:
             key_file.write(str(key1) + "\n")
-            key_file.write(str(key2))
+            key_file.write(str(key2) + "\n")
     else:
         pass
 
@@ -42,7 +43,6 @@ def encrypt(password):
         position = all_keys.find(i)
         newposition = (position + master_key) % 86
         encryption += all_keys[newposition]
-    print(encryption)
     return encryption
 
 def encrypt2(password):
@@ -51,9 +51,7 @@ def encrypt2(password):
         position = all_keys.find(i)
         newposition = (position + secondary_key) % 86
         encryption += all_keys[newposition]
-    print(encryption)
     return encryption
-
 
 def dencrypt(password):
     dencryption = ''
@@ -61,13 +59,36 @@ def dencrypt(password):
         position = all_keys.find(i)
         newposition = (position - secondary_key - master_key) % 86
         dencryption += all_keys[newposition]
-    print(dencryption)
+    print("Decrypted pass" + dencryption)
+    return dencryption
 
 # Have the user input the master password
 master = (input("Enter the master password (First time entering creates the master password): "))
 
-encrypted_password = encrypt2(encrypt(master))
-dencrypt(encrypted_password)
+encrypted_master = encrypt2(encrypt(master))
+
+# Check if there is master password
+masterExists = False
+
+with open("key.txt", 'r') as file:
+    masterExists = any("Master" in x for x in file)
+
+if masterExists == False:
+    with open('key.txt', 'a') as file:
+        file.write("Master\n" + encrypted_master)
+else:
+    pass
+
+# Check if Master Password is correct
+def isMasterCorrect(password):
+    with open("key.txt", 'r') as file:
+        content = file.readlines()
+        if encrypted_master == content[3]:
+            return True
+        else:
+            return False
+
+print(isMasterCorrect(encrypted_master))
 
 # Modules for modes in password manager
 def view():
